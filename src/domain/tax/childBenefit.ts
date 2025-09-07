@@ -20,17 +20,15 @@ export function computeChildBenefitCharge(adjustedNetIncome: number, grossChildB
   if (adjustedNetIncome <= CHILD_BENEFIT_CHARGE_START) {
     return { gross: grossChildBenefit, charge: 0, net: grossChildBenefit, withdrawnPercent: 0 };
   }
-  if (adjustedNetIncome >= CHILD_BENEFIT_CHARGE_END) {
-    return { gross: grossChildBenefit, charge: grossChildBenefit, net: 0, withdrawnPercent: 100 };
-  }
-  const range = CHILD_BENEFIT_CHARGE_END - CHILD_BENEFIT_CHARGE_START; // 20k
+  // 1% withdrawn for every £200 over the threshold
   const excess = adjustedNetIncome - CHILD_BENEFIT_CHARGE_START;
-  const withdrawnPercent = Math.min(1, excess / range);
-  const charge = grossChildBenefit * withdrawnPercent;
+  const percent = Math.min(100, Math.floor(excess / 200));
+  const withdrawnPercent = percent;
+  const charge = grossChildBenefit * (withdrawnPercent / 100);
   return {
     gross: grossChildBenefit,
     charge,
     net: grossChildBenefit - charge,
-    withdrawnPercent: withdrawnPercent * 100
+    withdrawnPercent
   };
 }

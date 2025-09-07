@@ -1,3 +1,27 @@
+import { computeChildBenefit, computeChildBenefitCharge } from '../src/domain/tax/childBenefit';
+describe('Child Benefit Charge (1% per £200 over threshold)', () => {
+  const gross = computeChildBenefit(2); // 2 children
+  const start = 60000; // Should match CHILD_BENEFIT_CHARGE_START
+  it('should not withdraw below threshold', () => {
+    const res = computeChildBenefitCharge(start, gross);
+    expect(res.charge).toBe(0);
+    expect(res.withdrawnPercent).toBe(0);
+  });
+  it('should withdraw 1% for each £200 over threshold', () => {
+    const res = computeChildBenefitCharge(start + 200, gross);
+    expect(res.withdrawnPercent).toBe(1);
+    expect(res.charge).toBeCloseTo(gross * 0.01, 2);
+    const res5 = computeChildBenefitCharge(start + 1000, gross);
+    expect(res5.withdrawnPercent).toBe(5);
+    expect(res5.charge).toBeCloseTo(gross * 0.05, 2);
+  });
+  it('should cap at 100% withdrawal', () => {
+    const res = computeChildBenefitCharge(start + 200 * 100, gross);
+    expect(res.withdrawnPercent).toBe(100);
+    expect(res.charge).toBeCloseTo(gross, 2);
+    expect(res.net).toBeCloseTo(0, 2);
+  });
+});
 import { computeTax } from '../src/domain/tax/engine';
 
 describe('Tax engine core cliffs', () => {
