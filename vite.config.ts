@@ -3,8 +3,5 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
-  test: {
-    environment: 'happy-dom',
-    globals: true
-  }
+  base: '/tax-app-web/' // Set base for GitHub Pages
 });
